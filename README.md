@@ -1,7 +1,7 @@
 The 'home-task' project is the REST api service. It accesses the db and serve the clients.
 
 The 'csv-monitor' project monitors the players.csv file, and after the file is saved, it checks for changes and send a
-message, using RabbitMQ, with the new/modified player, to the 'home-task' service.
+message, using RabbitMQ, with the new/modified player, to the 'home-task' service (see "S3 file watcher" below).
 The flow for checking if a player has been modified or is new -
 When the service starts, I check if a db_state.json file exists.
 The db_state.json file contains for each player a mappings between the playerID and the hash of the player's line in the
@@ -88,8 +88,10 @@ not covered:
   I didn't try to run the REST service on multiple machines, or test the service with multiple clients.
 
 * S3 file watcher -
-  I use a WatchService for monitoring the players file when the file is local. The local implementation is commented out
-  in the code. For monitoring the S3 file I can use AWS bucket notifications, when the event destination can be an SQS
+  I use a WatchService for monitoring the players file when the file is local. The local file implementation is
+  commented out
+  in the code, and instead I use an S3 file. For monitoring the S3 file I can use AWS bucket notifications, when the
+  event destination can be an SQS
   queue, or a lambda function that will send the event to our Rabbit queue.
 
 * names -
