@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  home-task:
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    restart: always
+    build: ./home-task
+    environment:
+      - SPRING.PROFILES.ACTIVE=staging
+    ports:
+      - 5002:5002
+
+  dbsynchronizer:
+    stdin_open: true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+    restart: always
+    build: ./csv-monitor
+    volumes:
+      - ./players:/app/players
+    ports:
+      - 5001:5001
+    environment:
+      - SPRING.PROFILES.ACTIVE=staging
+    depends_on:
+      - rabbitmq
